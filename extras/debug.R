@@ -1,5 +1,9 @@
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 Eunomia::createCohorts(connectionDetails)
+endDateFixSql <-"update main.cohort set cohort_end_date = dateadd(d,1, cohort_start_date) where cohort_end_date is null"
+conn <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+DatabaseConnector::renderTranslateExecuteSql(connection = conn, sql = endDateFixSql)
+DatabaseConnector::dbDisconnect(conn)
 
 workFolder <- tempfile("work")
 dir.create(workFolder)
@@ -20,4 +24,4 @@ irDesign <- as.character(CohortIncidence::IncidenceDesign$new(jobContext$setting
 analysisSql <- CohortIncidence::buildQuery(incidenceDesign =  irDesign,
                                            buildOptions = buildOptions);
 
-analysisSql <- SqlRender::translate(analysisSql, targetDialect = "sqlite");
+analysisSql <- SqlRender::translate(analysisSql, targetDialect = "sqlite")

@@ -31,8 +31,8 @@ validate <- function(jobContext) {
   
   # Validate that the analysis specification will work when we 
   # enter the execute statement. This is done by deserializing the design.
-  
-  designJson <- rJava::J("org.ohdsi.analysis.cohortincidence.design.CohortIncidence")$fromJson(jobContext$incidenceDesign)
+  irDesign <- CohortIncidence::IncidenceDesign$new(jobContext$settings$irDesign);
+  designJson <- rJava::J("org.ohdsi.analysis.cohortincidence.design.CohortIncidence")$fromJson(as.character(irDesign$asJSON()))
   
   invisible(designJson)
 }
@@ -60,7 +60,6 @@ execute <- function(jobContext) {
   executeResults <- CohortIncidence::executeAnalysis(connection = connection,
                                                      incidenceDesign = irDesign,
                                                      buildOptions = buildOptions)
-  browser()
   #Export the results
   exportFolder <- jobContext$moduleExecutionSettings$resultsSubFolder
   if (!dir.exists(exportFolder)) {
@@ -75,7 +74,6 @@ execute <- function(jobContext) {
   } else {
     executeResults$database_id <- character(0)
   }
-  
 
   #TODO: restrict executeREsults to minCellCount
   
